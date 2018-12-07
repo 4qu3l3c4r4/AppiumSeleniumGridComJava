@@ -1,4 +1,4 @@
-package com.menezes.screens;
+package com.4qu3l3c4r4.screens;
 
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.support.PageFactory;
