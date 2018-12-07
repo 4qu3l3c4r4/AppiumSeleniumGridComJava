@@ -1,4 +1,4 @@
-package com.4qu3l3c4r4.tests;
+package com.alan.tests;
 
 import static org.junit.Assert.assertTrue;
 
@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import com.4qu3l3c4r4.screens.CalculatorScreen;
+import com.alan.screens.CalculatorScreen;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
