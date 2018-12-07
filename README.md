@@ -22,11 +22,12 @@ Vamos primeiramente criar o nosso projeto de testes, abra sua IDE, e crie um pro
 
 ```File > New > Maven > Maven Project (Eclipse)```
 
-![alt text](https://github.com/menezes-ssz/AndroidAndIosTesteParaleloComAppium/blob/master/imagens/Projeto-Maven-Eclipse.png "Novo Projeto Maven")
+![alt text](https://github.com/4qu3l3c4r4/AppiumSeleniumGridComJava/blob/master/imagens/Projeto-Maven-Eclipse.png "Novo Projeto Maven")
+
 
 Escolha **maven-archetype-quickstart 1.1**, para gerar um projeto mais simples possível.
 
-![alt text](https://github.com/menezes-ssz/AndroidAndIosTesteParaleloComAppium/blob/master/imagens/Arquitetura-Projeto.png "Tipo Arquitetura")
+![alt text](https://github.com/4qu3l3c4r4/AppiumSeleniumGridComJava/blob/master/imagens/Arquitetura-Projeto.png "Tipo Arquitetura")
 
 Perfeito, agora vamos no nosso arquivo **pom.xml** e vamos adicionar todas as dependências e plugins que vamos usar no nosso projeto.
 
@@ -72,11 +73,11 @@ Depois da configuração do **pom.xml**, vamos criar um diretório que vamos col
 
 ```File > New > Folder > [folder-name]```
 
-![alt text](https://github.com/menezes-ssz/AndroidAndIosTesteParaleloComAppium/blob/master/imagens/Nova-Pasta.png "Tela Criação de Pastas")
+![alt text](https://github.com/4qu3l3c4r4/AppiumSeleniumGridComJava/blob/master/imagens/Nova-Pasta.png "Tela Criação de Pastas")
 
 Vou colocar aqui também os arquivos dos app para download:
 
-* [APK-ANDROID](https://github.com/menezes-ssz/AndroidAndIosTesteParaleloComAppium/raw/master/apps/app-android-calculator.apk)
+* [APK-ANDROID](https://github.com/3qu3l3c4r4/AppiumSeleniumGridComJava/raw/master/apps/app-android-calculator.apk)
 * [APP-IOS](https://drive.google.com/open?id=1A8Kw9AFb0SQTjb-dlOY16W1Y0FwBP-70)
 
 Faço o download deles e jogue na pasta que vc acabou de criar!
@@ -89,7 +90,7 @@ Ufa, depois de todas essas configurações podemos começar a criar nossas class
 
  ```File > New > Package > [package-name]```
 
-![alt text](https://github.com/menezes-ssz/AndroidAndIosTesteParaleloComAppium/blob/master/imagens/Package-Screen.png "Tela Criação de Pastas")
+![alt text](https://github.com/4qu3l3c4r4/AndroidAndIosTesteParaleloComAppium/blob/master/imagens/Package-Screen.png "Tela Criação de Pastas")
 
 E dentro deste pacote vamos criar a classe screen que vai contemplar todos elementos da tela da nossa aplicação.
 
@@ -275,7 +276,7 @@ $ mvn clean test
 
 Tcharannn!!
 
-![alt text](https://github.com/menezes-ssz/AndroidAndIosTesteParaleloComAppium/blob/master/imagens/Success-Tests.png "Test Success")
+![alt text](https://github.com/4qu3l3c4r4/AppiumSeleniumGridComJava/blob/master/imagens/Success-Tests.png "Test Success")
 
 
 Foi executado um teste de cada vez, próximo post vou focar no selenium grid e como vamos fazer nossa estrutura atual rodar em paralelo no selenium grid.
@@ -286,21 +287,224 @@ Obrigado <3
 
 ### Refrências
 
-* **Repositorio deste Projeto :** https://github.com/menezes-ssz/AndroidAndIosTesteParaleloComAppium
+* **Repositorio deste Projeto :** https://github.com/3qu3l3c4r4/AppiumSeleniumGridComJava
 * **Appium capabilities :** https://appium.io/docs/en/writing-running-appium/caps/
-* **Meu Git Hub :** https://github.com/menezes-ssz/
+* **Meu Git Hub :** https://github.com/3qu3l3c4r4/
 
 
+# Rodando testes em paralelo com Appium, Selenium Grid e Java: Parte 2
+
+Fala pessoal beleza ? Neste post vou dar continuidade com a configuração do selenium grid para executar os nossos testes em paralelo, vou falar um pouco de como funciona a estrutura e tentar frisar partes importantes da configuração, para que fique o mais simples possível. Bom se você não viu a primeira parte deste post eu super recomendo que veja, porque vou utilizar a estrutura que já tinha criado anteriormente. Sem mais delongas vamos começar!
+
+## O que é o selenium grid ?
+
+Bom de forma bem resumida o selenium grid é um hub em que nos permite centralizar , paralelizar e distribuir nossos testes em nós que nele são registrados.
+Como funciona ?
+
+![alt text](https://github.com/4qu3l3c4r4/AppiumSeleniumGridComJava/blob/master/imagens/Workflow-Selenium-Grid.jpeg "Workflow Selenium Grid")
 
 
+No desenho acima conseguimos visualizar os scripts de testes, o hub do selenium grid, os nós com servidores appium e os devices que vão rodar os nossos testes, vou explicar o papel de cada um nessa imagem.
+Scripts de teste : São os nossos testes propriamente ditos, aqui ficam os comandos que devem ser executados pelos nossos testes, nessa imagem seria o client side da estrutura.
+Terminal com servidores appium : Representam cada um dos nossos servidores que vamos subir com configurações diferentes para cada plataforma e local de execução. Eles ficam entre o device ou simulador e selenium hub.
+Hub selenium grid : É um outro servidor que serve como um hub, para que seja possível registrar outros nós de servidores appium, nele conseguimos acessar um console com todos os nós nele conectado. O selenium grid fica como uma ponte entre os scprits de teste e os nós de appium.
+Legal, agora que fizemos esse overview vamos colocar a mão na massa!
+Mãos à obra!
+________________________________________
+Realizando ajustes na estrutura do projeto atual
+Antes de começar tudo vamos fazer alguns ajustes na nossa estrutura atual do projeto, como demorei um pouco para continuar este post, algumas coisas precisam e precisaram ser alteradas, então vamos lá!
+
+## Alterar JRE System Library para JavaSE-1.8 (Somente se necessário)
+
+![alt text](https://github.com/4qu3l3c4r4/AppiumSeleniumGridComJava/blob/master/imagens/Alterando-JRE-System-Library.gif "Alterando JRE System Library")
+
+Vamos definir que esta vai ser a versão do java vamos usar para compilar o nosso projeto, vamos setar isso no arquivo pom.xml:
+
+```Xml
+<properties>
+	  <maven.compiler.source>1.8</maven.compiler.source>
+	  <maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+```
+
+## Definindo compilador
+
+Bom depois desses ajustes vamos adicionar uma configuração no surefire, para fazermos com que nossos testes executem em paralelo com duas threadsabertas e execute em paralelo pelas classes de teste.
 
 
+```Xml
+	<configuration>
+	  <source>1.8</source>
+	  <target>1.8</target>
+	  <parallel>classes</parallel>
+	  <threadCount>2</threadCount>
+	</configuration>
+```
+
+Configuração surefire para execução de testes em paralelo
+
+Vamos atualizar também a nossa lib java cliente
 
 
+```Xml
+	<dependency>
+	 <groupId>io.appium</groupId>
+	 <artifactId>java-client</artifactId>
+	 <version>6.1.0</version>
+	</dependency>
+```
 
+**Atualização do Java Client**
 
+Quando fui executar os testes me deparei com algumas incompatibilidades em padrões que antes funcionavam e fiz algumas atualizações no código!
 
+**alterando o capabilities e chamadas de métodos do appium driver**
 
+```Java
+	public CalculatorScreen fillFirstNumber(String number) {
+	  inputFirstNumber.clear();
+	  inputFirstNumber.sendKeys(number);
+	  return this;
+	}
+		
+	public CalculatorScreen fillSecondNumber(String number) {
+	  inputSecondNumber.clear();
+	  inputSecondNumber.sendKeys(number);
+	  return this;
+	}
+		
+	public CalculatorScreen closeKeyboard() {
+	  driver.hideKeyboard();
+	  return this;
+	}
+```
+**Alteração do métodos de preenchimento e de esconder o teclado
 
+```Java
+	@BeforeClass
+	public static void setup() throws MalformedURLException {
+	  DesiredCapabilities capabilities = new DesiredCapabilities();
+	  capabilities.setCapability("app",new File("apps/SimpleCalculator.app"));
+	  capabilities.setCapability("deviceName", "iPhone SE");
+	  capabilities.setCapability("automationName" , "XCUITest");
+	  appiumDriver = new IOSDriver<MobileElement>(new URL("http://localhost:4444/wd/hub") , capabilities);
+	  calculatorScreen = new CalculatorScreen(appiumDriver);
+	}
+```
 
-  
+**Alteração dos capabilities removendo plataform name e plataform**
+
+É importante salientar que é necessário atualizar a url em que nosso cliente vai se conectar, tanto do teste de Android quanto o de Ios, conforme visualizamos mais acima, agora vamos nos conectar utilizando somente o hub!
+________________________________________
+
+### Configurando Selenium Grid
+
+Finalmente após estes ajustes podemos agora fazer a configuração do selenium grid!
+Para iniciar vamos fazer o download do jar do selenium standalone que será o nosso hub. Após o download vamos colar o arquivo na raiz do nosso projeto.
+Agora vamos criar um nó para cada sistema operacional diferente, esse nós são arquivos json, neles serão escritos as configurações que o nó deve possuir.
+Lembrando que coloquei estas pequenas descrições no arquivo para resumir alguns atributos de configuração do node, não é possível comentar arquivos json!
+
+```Java
+	{
+	
+
+	    "capabilities":
+	        [
+	            {
+	                "browserName": "Android", // Nome de browser que será alocado no grid
+	                "maxInstances": 1, // Quantidade total de instâncias dentro do nó
+	                "platform":"ANDROID", // Plataforma em que o teste será executado o teste
+	                "deviceName":"emulator-5554", // udid do device android
+	                "newCommandTimeout":"30", 
+	                "deviceReadyTimeout":5
+	            }
+	        ],
+	    "configuration":
+	    {
+	        "cleanUpCycle":2000,
+	        "timeout":10800,
+	        "url":"http://127.0.0.1:4456/wd/hub", // url deste nó dentro do hub
+	        "host": "127.0.0.1", // host deste nó
+	        "port": 4456, // porta em que nó será executado
+	        "proxy": "org.openqa.grid.selenium.proxy.DefaultRemoteProxy",
+	        "maxSession": 1, // quantidade total de sessões simultâneas 
+	        "register": true,
+	        "registerCycle": 5000,
+	        "hubPort": 4444, // porta do hub em que este nó vai se conectar
+	        "hubHost": "127.0.0.1" // host do hub em que este nó vai se conectar
+	    }
+	    
+	}
+```
+
+## Android Node Capabilities
+
+```Java
+	{
+	    "capabilities": [
+	        {
+	            "browserName": "safari",
+	            "technologyPreview": false,
+	            "version": "11.0",
+	            "platform": "MAC",
+	            "platformName": "ios",
+	            "maxInstances": 1,
+	            "seleniumProtocol": "WebDriver"
+	        }
+	    ],
+	    "configuration": {
+	        "cleanUpCycle": 2000,
+	        "timeout": 10800,
+	        "url": "http://127.0.0.1:4455/wd/hub",
+	        "host": "127.0.0.1",
+	        "port": 4455,
+	        "proxy": "org.openqa.grid.selenium.proxy.DefaultRemoteProxy",
+	        "maxSession": 1,
+	        "register": true,
+	        "registerCycle": 5000,
+	        "hubPort": 4444,
+	        "hubHost": "127.0.0.1"
+	    }
+	}
+```
+
+## IOS Node Capabilities
+Após criar os arquivos salve-os e coloque os dois juntos em uma pasta chamada /node-configurations/ na raiz do seu projeto.
+Não vou entrar muito no detalhe de todos os atributos pois o post ficaria gigante rsrs. Mas você pode dar uma olhada nesta documentação.
+________________________________________
+Inicializando HUB e registrando os nós.
+
+**iniciar hub ```$ java -jar selenium-server-standalone-3.14.0.jar -role hub (lembre-se de inserir a sua versão do jar)```
+
+** verifique se o hub foi iniciado corretamente acessando em seu navegador o endereço * **http://localhost:4444/**
+
+![alt text](https://github.com/4qu3l3c4r4/AppiumSeleniumGridComJava/blob/master/imagens/Selenium-Standalone-Page.png "Selenium Standalone Page")
+
+Agora vamos conectar nossos nós ao hub :
+```appium --nodeconfig ./ios-node.json -p 4455 -cp 4455```
+
+```appium --nodeconfig ./android-node.json -p 4456 -cp 4456```
+
+**Após realizado os comandos acima precisamos confirmar se tudo está conectado de forma correta, para isso vamos acessar o console da nossa página do selenium standalone * **http://localhost:4444/grid/console**
+
+![alt text](https://github.com/4qu3l3c4r4/AppiumSeleniumGridComJava/blob/master/imagens/Console-Selenium-Grid.png "Console Selenium Grid")
+
+Tudo certo ? Espero que sim!
+Executando os testes!
+Inicie seu emulador android e vamos rodar os testes com o maven e ver a magia acontecer!
+Dentro do diretório raiz em que se encontra o arquivo pom.xml vamos executar o seguinte comando :
+```$ mvn clean test```
+
+**Mágico não ?
+
+![alt text](https://github.com/4qu3l3c4r4/AppiumSeleniumGridComJava/blob/master/imagens/Testes-executados-com-sucesso-e-em-paralelo.png "Testes executados com sucesso e em paralelo ❤")
+
+### Conclusão
+
+Mesmo que nesse projeto de exemplo, não tenha aproveitado toda capacidade do selenium-grid podemos ver algumas vantagens em seu uso para execução de testes distribuídos! Podemos ter nós por diversos sistemas operacionais centralizados em um único hub, podemos também executar os mesmos testes distribuídos e em paralelo conforme a nossa necessidade, o que torna nossos testes muito mais escaláveis!
+
+### Referências
+
+* **Selenium Grid**: https://www.seleniumhq.org/projects/grid/
+* **Java Client**: https://github.com/appium/java-client
+* **Appium Documentation**: http://appium.io/docs/en/about-appium/intro/
